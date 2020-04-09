@@ -43,6 +43,18 @@ const IndexPage = () => {
   }, []);
 
   useEffect(() => {
+    async function fetchData() {
+      const res = await fetch("/.netlify/functions/get-urls");
+      res
+        .json()
+        .then(res => console.log(res))
+        .catch(err => setErrors(err))
+    }
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     async function fetchPk() {
       setPkLoading(true);
       const res = await fetch("/.netlify/functions/get-publishable-key");
