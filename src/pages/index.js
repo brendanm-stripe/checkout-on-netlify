@@ -21,8 +21,12 @@ const IndexPage = () => {
   const [pk, setPk] = useState(null);
   const [pkLoading, setPkLoading] = useState(false);
 
-  const [products, setProducts] = useState(null);
+  const [products, setProducts] = useState({});
   const [productsLoading, setProductsLoading] = useState(false);
+
+  const [cart, setCart] = useState({});
+  const [cartIsEmpty, setCartIsEmpty] = useState(true);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     async function fetchData() {
@@ -55,14 +59,26 @@ const IndexPage = () => {
     fetchPk();
   }, []);
 
+  const getCartTotal = useCallback((cart) => {
+    const newTotal = Object.entries(cart)
+      .filter(([p, num]) => num > 0)
+      .reduce((acc, [p, num]) => acc + (products[p].unit_amount * num),0)
+    return newTotal;
+  }, [productsLoading])
+
+  const updateCart = useCallback((cart) => {
+    setCart(cart);
+    setCartIsEmpty(Object.entries(cart).filter(([p, num]) => num > 0).length === 0);
+    setTotal(getCartTotal(cart));
+  }, [getCartTotal]);
+
   useEffect(() => {
     async function fetchProducts() {
       setProductsLoading(true);
-      // const stripe = await stripePromise;
       const response = await fetch("/.netlify/functions/get-products");
       const data = await response.json();
-      console.log({products_data: data})
-      setProducts(data.products);
+      const productsHash = data.products.reduce((acc, p) => ({...acc, [p.id]: p}), {} )
+      setProducts(productsHash);
       setProductsLoading(false);
     }
     fetchProducts();
@@ -71,13 +87,36 @@ const IndexPage = () => {
   const checkout = useCallback(async () => {
     if (isCheckingOut) return;
     setIsCheckingOut(true);
-    const response = await fetch("/.netlify/functions/checkout");
+    const response = await fetch("/.netlify/functions/checkout",{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cart),
+    });
     const {checkout_session} = await response.json();
-    console.log({checkout_session})
     const stripe = await stripePromise;
     stripe.redirectToCheckout({sessionId: checkout_session});
     setIsCheckingOut(false);
-  }, [pk]) // update the callback if the state changes
+  }, [pk, cart]) // update the callback if the state changes
+
+  const addToCart = useCallback((productId) => () => {
+    const newCart = {
+      ...cart,
+      [productId]: (cart[productId] || 0) + 1
+    };
+    updateCart(newCart);
+    // setTotal(getCartTotal(newCart));
+  }, [cart, getCartTotal]);
+
+  const removeFromCart = useCallback((productId) => () => {
+    const newCart = {
+      ...cart,
+      [productId]: cart[productId] - 1
+    };
+    updateCart(newCart);
+    // setTotal(getCartTotal(newCart));
+  }, [cart, getCartTotal])
 
   return (
     <Layout>
@@ -102,15 +141,44 @@ const IndexPage = () => {
       <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
         <Image />
       </div>
-      { products &&
+      { (Object.keys(products).length > 0) &&
       <div>
         <ul>
-          {products.map(p => <li><span>{`${p.product.name} - ${p.product.caption} - $${(p.unit_amount/100.0)}`}</span></li>)}
+          {Object.values(products)
+            .map(p =>
+              <li key={p.id}>
+                <span>{`${p.product.name} - ${p.product.caption} - $${(p.unit_amount/100.0)}`}</span>
+                <input type="button" onClick={addToCart(p.id)} value="Add"/>
+              </li>
+            )
+          }
         </ul>
       </div>
       }
       <div>
-        <input type="button" disabled={isCheckingOut} onClick={checkout} value="Checkout Now"/>
+      { !cartIsEmpty ?
+        <div>
+          <span>Cart:</span>
+          <ul>
+            {
+              Object.entries(cart)
+              .filter(([p, num]) => num > 0)
+              .map(([p, num]) =>
+                <li key={p}>
+                  <span>{`${products[p].product.name}: ${num}`}</span>
+                  <input type="button" onClick={removeFromCart(p)} value="-"/>
+                  <input type="button" onClick={addToCart(p)} value="+"/>
+                </li>
+              )
+            }
+          </ul>
+          <span>Total: ${(total/100.0)}</span>
+        </div>
+        : <p>Cart is empty.</p>
+      }
+      </div>
+      <div>
+        <input type="button" disabled={isCheckingOut || cartIsEmpty} onClick={checkout} value="Checkout Now"/>
       </div>
       <ul>
         <li><Link to="/page-2/">Go to page 2</Link></li>
