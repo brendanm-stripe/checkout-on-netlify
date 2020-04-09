@@ -19,8 +19,8 @@ exports.handler = async function(event, context, callback) {
   // }
 
   //-- Parse the body contents into an object.
-  // const data = JSON.parse(event.body)
-  // console.log({codata: data});
+  const data = JSON.parse(event.body)
+  console.log({codata: data});
 
   //-- Make sure we have all required data. Otherwise, escape.
   // if (!data.token || !data.amount || !data.idempotency_key) {
@@ -34,21 +34,20 @@ exports.handler = async function(event, context, callback) {
 
   //   return
   // }
+  const items = Object.entries(data).map(([priceId, num]) => ({
+    price: priceId,
+    quantity: num
+  }));
+  console.log({items});
+
   try {
     const session = await stripe.checkout.sessions.create(
       {
         success_url: `${process.env.DEPLOY_URL}/success`,
         cancel_url: `${process.env.DEPLOY_URL}/cancel`,
         payment_method_types: ['card'],
-        line_items: [
-          {
-            name: 'T-shirt',
-            description: 'Comfortable cotton t-shirt',
-            amount: 1200,
-            currency: 'usd',
-            quantity: 2,
-          },
-        ],
+        mode: 'payment',
+        line_items: items,
       }
     );
     callback(null, {
