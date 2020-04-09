@@ -5,8 +5,10 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       body: JSON.stringify({ 
         URL: process.env.URL, 
-        DEPLOY_PRIME_URL: process.env.DEPLOY_PRIME_URL, 
-        DEPLOY_URL: process.env.DEPLOY_URL, 
+        DEPLOY_URL: process.env.DEPLOY_URL || 'https://www.missing.com', 
+        DEPLOY_PRIME_URL: process.env.DEPLOY_PRIME_URL || 'https://www.missing.com',
+        UNDEF: undefined,
+        CANARY: 'tweet',
       })
       // // more keys you can return:
       // headers: { "headerName": "headerValue", ... },
