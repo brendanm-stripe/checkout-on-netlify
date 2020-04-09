@@ -1,8 +1,9 @@
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Default Starter`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
-    author: `@gatsbyjs`,
+    // title: `Stripe Checkout Example`,
+    title: `${process.env.GATSBY_TITLE || 'Stripe Checkout Example fallback'}`,
+    description: `Get up and running selling online with Stripe Checkout with zero code required.`,
+    author: `@brendanm-stripe`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
