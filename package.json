@@ -30,7 +30,7 @@
   "scripts": {
     "build": "gatsby build",
     "postbuild-bork": "netlify-lambda build --config ./webpack.functions.js functions-build/",
-    "postbuild": "netlify-lambda build --config ./webpack.functions.js/ src/functions",
+    "postbuild": "netlify-lambda build --config ./webpack.functions.js src/functions",
     "develop": "gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "start": "npm run develop",
