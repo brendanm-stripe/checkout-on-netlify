@@ -29,7 +29,7 @@
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
-    "postbuild": "netlify-lambda build --config ./webpack.functions.js .netlify/functions/",
+    "postbuild": "netlify-lambda build --config ./webpack.functions.js ./.netlify/functions/",
     "develop": "gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "start": "npm run develop",
