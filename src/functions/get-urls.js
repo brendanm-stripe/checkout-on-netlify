@@ -1,1 +1,2 @@
-export { handler } from './get-urls'
+import { handler } from './get-urls/get-urls';
+exports.handler = handler;
