@@ -29,7 +29,8 @@
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
-    "postbuild": "netlify-lambda build --config ./webpack.functions.js functions-build/",
+    "postbuild-bork": "netlify-lambda build --config ./webpack.functions.js functions-build/",
+    "postbuild": "netlify-lambda build --config ./webpack.functions.js/",
     "develop": "gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "start": "npm run develop",
