@@ -1,10 +1,12 @@
 import React, {useState, useEffect, useCallback} from "react"
 import { Link } from "gatsby"
 import {loadStripe} from '@stripe/stripe-js'
+import Img from 'react-image';
 
 import Layout from "../components/layout"
-import Image from "../components/image"
+// import Image from "../components/image"
 import SEO from "../components/seo"
+import Loader from "../components/loader"
 
 const stripePublishableKeyStatic = `${process.env.GATSBY_STRIPE_PUBLISHABLE_KEY}`;
 console.log({stripePublishableKeyStatic})
@@ -141,31 +143,21 @@ const IndexPage = () => {
       <h1>Hi!</h1>
       <p>Welcome to your new Netlify-hosted Gatsby-based e-commerce site.</p>
       <p>(Still a work in progress!)</p>
-      <p>Stripe PK Static: {stripePublishableKeyStatic}</p>
-      <p>
-        <span>Stripe PK Fetch:</span>
-        <span>{pkLoading ? 'loading' : pk}</span>
-      </p>
-      <p>
-        { !!joke ? 
-          <React.Fragment>
-            <span>A joke: </span>
-            <span>{joke}</span>
-          </React.Fragment>
-          : (loading ? <span>...loading joke</span> : <span>{`No joke :(`}</span>)
-        }
-      </p>
-      <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
-        <Image />
-      </div>
-      { (Object.keys(products).length > 0) &&
+      { productsLoading ? <Loader /> : (Object.keys(products).length > 0) &&
       <div>
         <ul>
-          {Object.values(products)
+          { Object.values(products)
             .map(p =>
               <li key={p.id}>
                 <span>{`${p.product.name} - ${p.product.caption} - $${(p.unit_amount/100.0)}`}</span>
                 <input type="button" onClick={addToCart(p.id)} value="Add"/>
+                <div>
+                <Img
+                  src={ p.product.images }
+                  style={{ width: '150px' }}
+                  loader={<Loader />}
+                />
+                </div>
               </li>
             )
           }
@@ -198,7 +190,6 @@ const IndexPage = () => {
         <input type="button" disabled={isCheckingOut || cartIsEmpty} onClick={checkout} value="Checkout Now"/>
       </div>
       <ul>
-        <li><Link to="/page-2/">Go to page 2</Link></li>
         <li><Link to="/success/">Preview success page</Link></li>
         <li><Link to="/cancel/">Preview cancel page</Link></li>
       </ul>   
