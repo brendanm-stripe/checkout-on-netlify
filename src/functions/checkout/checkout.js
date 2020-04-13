@@ -1,8 +1,10 @@
 // with thanks https://github.com/alexmacarthur/netlify-lambda-function-example/blob/68a0cdc05e201d68fe80b0926b0af7ff88f15802/lambda-src/purchase.js
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const DEPLOY_URL = process.env.DEPLOY_URL;
-console.log({DEPLOY_URL});
+
+const IS_PROD = process.env.CONTEXT && process.env.CONTEXT === 'production';
+const IS_LOCAL = !process.env.NETLIFY;
+const REDIRECT_URL = (IS_PROD || IS_LOCAL) ? process.env.URL : process.env.DEPLOY_PRIME_URL;
 
 const statusCode = 200
 const headers = {
@@ -12,7 +14,7 @@ const headers = {
 
 exports.handler = async function(event, context, callback) {
   console.log('checkout function');
-  console.log({DEPLOY_URL});
+  console.log({REDIRECT_URL});
 
   //-- We only care to do anything if this is our POST request.
   // if (event.httpMethod !== 'POST' || !event.body) {
@@ -48,8 +50,8 @@ exports.handler = async function(event, context, callback) {
   try {
     const session = await stripe.checkout.sessions.create(
       {
-        success_url: `${DEPLOY_URL}/success`,
-        cancel_url: `${DEPLOY_URL}/cancel`,
+        success_url: `${REDIRECT_URL}/success`,
+        cancel_url: `${REDIRECT_URL}/cancel`,
         payment_method_types: ['card'],
         mode: 'payment',
         line_items: items,
