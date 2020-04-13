@@ -31,7 +31,12 @@ const IndexPage = () => {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      const res = await fetch("/.netlify/functions/get-joke");
+      const res = await fetch("/.netlify/functions/get-joke", {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
       res
         .json()
         .then(res => setJoke(res.msg))

@@ -2,6 +2,6 @@
 const webpack = require('webpack')
 module.exports = {
     plugins: [
-        new webpack.EnvironmentPlugin(['DEPLOY_URL', 'DEPLOY_PRIME_URL', 'NODE_ENV'])
+        new webpack.EnvironmentPlugin(['DEPLOY_URL', 'DEPLOY_PRIME_URL', 'NODE_ENV', 'CONTEXT', 'NETLIFY', 'TEST_ENV'])
     ]
 }

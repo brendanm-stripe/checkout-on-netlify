@@ -1,9 +1,12 @@
 /* eslint-disable */
-const fetch = require('node-fetch')
+const fetch = require('node-fetch').default;
 exports.handler = async function(event, context) {
   try {
     const response = await fetch('https://icanhazdadjoke.com', {
-      headers: { Accept: 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
     })
     if (!response.ok) {
       // NOT res.status >= 200 && res.status < 300

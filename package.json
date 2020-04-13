@@ -29,12 +29,11 @@
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
-    "postbuild-bork": "netlify-lambda build --config ./webpack.functions.js functions-build/",
     "postbuild": "netlify-lambda build --config ./webpack.functions.js src/functions",
     "develop": "gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
-    "start": "npm run develop",
-    "serve": "gatsby serve",
+    "start": "NODE_ENV=development TEST_ENV=valb npm run develop",
+    "serve": "NODE_ENV=production TEST_ENV=valc gatsby serve",
     "clean": "gatsby clean",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1",
     "postinstall": "netlify-lambda install src/functions"

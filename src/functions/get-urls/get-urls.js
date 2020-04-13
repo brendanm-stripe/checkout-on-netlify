@@ -5,7 +5,9 @@ const urls = {
   DEPLOY_PRIME_URL: process.env.DEPLOY_PRIME_URL || 'https://www.missing.com',
   UNDEF: undefined,
   CANARY: 'tweet',
-  ENVIRONMENT: process.env.NODE_ENV || 'missing_env',
+  ENVIRONMENT: process.env.NODE_ENV || 'missing_node_env',
+  CONTEXT: process.env.CONTEXT || 'missing_context',
+  NETLIFY: process.env.NETLIFY || 'missing_netlify',
 };
 console.log(urls);
 exports.handler = async (event, context) => {

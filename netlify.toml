@@ -1,4 +1,4 @@
 [build]
-  command = "yarn build"
+  command = "NODE_ENV=production TEST_ENV=vala yarn build"
   functions = "built-functions"
   publish = "public"
