@@ -155,9 +155,6 @@ const IndexPage = () => {
           : (loading ? <span>...loading joke</span> : <span>{`No joke :(`}</span>)
         }
       </p>
-      <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
-        <Image />
-      </div>
       { (Object.keys(products).length > 0) &&
       <div>
         <ul>
