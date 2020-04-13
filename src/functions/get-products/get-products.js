@@ -1,5 +1,5 @@
 /* eslint-disable */
-const fetch = require('node-fetch')
+const fetch = require('node-fetch').default;
 const stripe = require('stripe')
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY)
 exports.handler = async function(event, context) {

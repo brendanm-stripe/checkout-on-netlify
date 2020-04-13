@@ -31,12 +31,29 @@ const IndexPage = () => {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      const res = await fetch("/.netlify/functions/get-joke");
+      const res = await fetch("/.netlify/functions/get-joke", {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
       res
         .json()
         .then(res => setJoke(res.msg))
         .catch(err => setErrors(err))
         .finally(() => setLoading(false));
+    }
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    async function fetchData() {
+      const res = await fetch("/.netlify/functions/get-urls");
+      res
+        .json()
+        .then(res => console.log(res))
+        .catch(err => setErrors(err))
     }
 
     fetchData();
@@ -122,8 +139,8 @@ const IndexPage = () => {
     <Layout>
       <SEO title="Home" />
       <h1>Hi!</h1>
-      <p>Welcome to your new Gatsby-based e-commerce site.</p>
-      <p>(WIP)</p>
+      <p>Welcome to your new Netlify-hosted Gatsby-based e-commerce site.</p>
+      <p>(Still a work in progress!)</p>
       <p>Stripe PK Static: {stripePublishableKeyStatic}</p>
       <p>
         <span>Stripe PK Fetch:</span>
