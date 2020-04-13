@@ -139,8 +139,8 @@ const IndexPage = () => {
     <Layout>
       <SEO title="Home" />
       <h1>Hi!</h1>
-      <p>Welcome to your new Gatsby-based e-commerce site.</p>
-      <p>(WIP)</p>
+      <p>Welcome to your new Netlify-hosted Gatsby-based e-commerce site.</p>
+      <p>(Still a work in progress!)</p>
       <p>Stripe PK Static: {stripePublishableKeyStatic}</p>
       <p>
         <span>Stripe PK Fetch:</span>
