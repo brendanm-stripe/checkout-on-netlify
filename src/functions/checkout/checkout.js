@@ -29,6 +29,8 @@ exports.handler = async function(event, context, callback) {
   const data = JSON.parse(event.body)
   console.log({codata: data});
 
+  const {cart, grctoken} = data;
+  console.log({grctoken});
   //-- Make sure we have all required data. Otherwise, escape.
   // if (!data.token || !data.amount || !data.idempotency_key) {
   //   console.error('Required information is missing.')
@@ -41,7 +43,7 @@ exports.handler = async function(event, context, callback) {
 
   //   return
   // }
-  const items = Object.entries(data).map(([priceId, num]) => ({
+  const items = Object.entries(cart).map(([priceId, num]) => ({
     price: priceId,
     quantity: num
   }));
