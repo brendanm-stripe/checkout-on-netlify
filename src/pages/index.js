@@ -132,7 +132,7 @@ const IndexPage = () => {
 
   const addToCart = useCallback((productId) => () => {
     // grecaptcha.execute(googleRecaptchaPublishableKey, {action: 'cart-add'});
-    safeGrecaptcha({action: 'cart-add'});
+    safeGrecaptcha({action: 'cartadd'});
     const newCart = {
       ...cart,
       [productId]: (cart[productId] || 0) + 1
@@ -143,7 +143,7 @@ const IndexPage = () => {
 
   const removeFromCart = useCallback((productId) => () => {
     // grecaptcha.execute(googleRecaptchaPublishableKey, {action: 'cart-remove'});
-    safeGrecaptcha({action: 'cart-remove'});
+    safeGrecaptcha({action: 'cartremove'});
 
     const newCart = {
       ...cart,
