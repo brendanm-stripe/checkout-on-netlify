@@ -6,8 +6,12 @@ const fetch = require('node-fetch').default;
 const IS_PROD = process.env.CONTEXT && process.env.CONTEXT === 'production';
 const IS_LOCAL = !process.env.NETLIFY;
 const REDIRECT_URL = (IS_PROD || IS_LOCAL) ? process.env.URL : process.env.DEPLOY_PRIME_URL;
+const GRC_TEST_SECRET = '6LdqhuwUAAAAABT6_aAtEHMjgdPVAB559N0OJ2LP';
+// const GRC_TEST_V2 = '6LcjiOwUAAAAAKlEMIckfOGSEECmt8_Ra9NI8CAn';
 
 const verifyRecaptchaToken = async (token) => {
+  console.log('verifyRecaptchaToken');
+  console.log({token});
   if (IS_LOCAL) return true;
   // fetch('https://www.google.com/recaptcha/api/siteverify');
   const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
@@ -17,6 +21,8 @@ const verifyRecaptchaToken = async (token) => {
     },
     body: JSON.stringify({
       secret: process.env.RECAPTCHA_SECRET,
+      // secret: process.env.GRC_TEST_SECRET,
+      // secret: process.env.GRC_TEST_V2,
       response: token,
     }),
   });

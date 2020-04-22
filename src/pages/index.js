@@ -8,7 +8,10 @@ import Layout from "../components/layout"
 import SEO from "../components/seo"
 import Loader from "../components/loader"
 
-const googleRecaptchaPublishableKey = '6LePjOkUAAAAAIlHjW_wLoCsUQPUzwOZZgYGRPR1';
+// const googleRecaptchaPublishableKey = '6LePjOkUAAAAAIlHjW_wLoCsUQPUzwOZZgYGRPR1';
+const googleRecaptchaPublishableKey = '6LdqhuwUAAAAABgVyvQzKyoyZPQCYUjmD0NiMp8k'; // LOCAL TEST key
+// const googleRecaptchaPublishableKey = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // GLOBAL TEST key
+// const googleRecaptchaPublishableKey = '6LcjiOwUAAAAAAJzQblwM8pLMsTKe3VZm3ukN4fD'; // v2 key
 const safeGrecaptcha = ({action}) => {
   if (typeof window !== `undefined`) {
     // return the Promise
@@ -153,10 +156,19 @@ const IndexPage = () => {
     // setTotal(getCartTotal(newCart));
   }, [cart, getCartTotal]);
 
+  // const grcV2callbackTest = val => {
+  //   console.log('grcV2callbackTest', val );
+  // }
+
   return (
     <Layout>
       <SEO title="Home" />
       <h1>Hi!</h1>
+      {/* <div class="g-recaptcha"
+        data-sitekey={`${googleRecaptchaPublishableKey}`}
+        data-callback={grcV2callbackTest}
+        data-size="invisible">
+      </div> */}
       <p>Welcome to your new Netlify-hosted Gatsby-based e-commerce site.</p>
       <p>(Still a work in progress!)</p>
       { productsLoading ? <Loader /> : (Object.keys(products).length > 0) &&
