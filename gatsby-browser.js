@@ -12,7 +12,7 @@ exports.wrapRootElement = ({ element }) => {
   return (
     <React.Fragment>
       <Helmet>
-        <script src="https://www.google.com/recaptcha/api.js?render=6LePjOkUAAAAAIlHjW_wLoCsUQPUzwOZZgYGRPR1"></script>
+        <script src="https://www.google.com/recaptcha/api.js?render=6LdqhuwUAAAAABgVyvQzKyoyZPQCYUjmD0NiMp8k"></script>
       </Helmet>
       {element}
     </React.Fragment>

@@ -2,6 +2,7 @@
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fetch = require('node-fetch').default;
+const { URLSearchParams } = require('url');
 
 const IS_PROD = process.env.CONTEXT && process.env.CONTEXT === 'production';
 const IS_LOCAL = !process.env.NETLIFY;
@@ -12,19 +13,25 @@ const GRC_TEST_SECRET = '6LdqhuwUAAAAABT6_aAtEHMjgdPVAB559N0OJ2LP';
 const verifyRecaptchaToken = async (token) => {
   console.log('verifyRecaptchaToken');
   console.log({token});
-  if (IS_LOCAL) return true;
+  // if (IS_LOCAL) return true;
   // fetch('https://www.google.com/recaptcha/api/siteverify');
+  const params = new URLSearchParams();
+  // params.append('secret', process.env.RECAPTCHA_SECRET);
+  params.append('secret', GRC_TEST_SECRET);
+  params.append('response', token);
+  console.log({params});
   const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
     method: 'POST',
-    headers: {
-      Accept: 'application/json',
-    },
-    body: JSON.stringify({
-      secret: process.env.RECAPTCHA_SECRET,
-      // secret: process.env.GRC_TEST_SECRET,
-      // secret: process.env.GRC_TEST_V2,
-      response: token,
-    }),
+    // headers: {
+    //   'Content-Type': 'application/json',
+    // },
+    body: params,
+    // body: JSON.stringify({
+    //   secret: process.env.RECAPTCHA_SECRET,
+    //   // secret: process.env.GRC_TEST_SECRET,
+    //   // secret: process.env.GRC_TEST_V2,
+    //   response: token,
+    // }),
   });
   const data = await response.json();
   console.log({grcdata: data});
