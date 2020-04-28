@@ -1,10 +1,42 @@
 // with thanks https://github.com/alexmacarthur/netlify-lambda-function-example/blob/68a0cdc05e201d68fe80b0926b0af7ff88f15802/lambda-src/purchase.js
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const fetch = require('node-fetch').default;
+const { URLSearchParams } = require('url');
 
 const IS_PROD = process.env.CONTEXT && process.env.CONTEXT === 'production';
 const IS_LOCAL = !process.env.NETLIFY;
 const REDIRECT_URL = (IS_PROD || IS_LOCAL) ? process.env.URL : process.env.DEPLOY_PRIME_URL;
+const GRC_TEST_SECRET = '6LdqhuwUAAAAABT6_aAtEHMjgdPVAB559N0OJ2LP';
+// const GRC_TEST_V2 = '6LcjiOwUAAAAAKlEMIckfOGSEECmt8_Ra9NI8CAn';
+
+const verifyRecaptchaToken = async (token) => {
+  console.log('verifyRecaptchaToken');
+  console.log({token});
+  // if (IS_LOCAL) return true;
+  // fetch('https://www.google.com/recaptcha/api/siteverify');
+  const params = new URLSearchParams();
+  // params.append('secret', process.env.RECAPTCHA_SECRET);
+  params.append('secret', GRC_TEST_SECRET);
+  params.append('response', token);
+  console.log({params});
+  const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+    method: 'POST',
+    // headers: {
+    //   'Content-Type': 'application/json',
+    // },
+    body: params,
+    // body: JSON.stringify({
+    //   secret: process.env.RECAPTCHA_SECRET,
+    //   // secret: process.env.GRC_TEST_SECRET,
+    //   // secret: process.env.GRC_TEST_V2,
+    //   response: token,
+    // }),
+  });
+  const data = await response.json();
+  console.log({grcdata: data});
+  return (data.success == true && data.score > 0.5);
+}
 
 const statusCode = 200
 const headers = {
@@ -29,6 +61,18 @@ exports.handler = async function(event, context, callback) {
   const data = JSON.parse(event.body)
   console.log({codata: data});
 
+  const {cart, grctoken} = data;
+  console.log({grctoken});
+  const grcresult = await verifyRecaptchaToken(grctoken);
+  console.log({grcresult});
+  if( grcresult == false ){
+    callback(null, {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ message: 'Error creating your checkout session!' })
+    });
+    return;
+  }
   //-- Make sure we have all required data. Otherwise, escape.
   // if (!data.token || !data.amount || !data.idempotency_key) {
   //   console.error('Required information is missing.')
@@ -41,7 +85,7 @@ exports.handler = async function(event, context, callback) {
 
   //   return
   // }
-  const items = Object.entries(data).map(([priceId, num]) => ({
+  const items = Object.entries(cart).map(([priceId, num]) => ({
     price: priceId,
     quantity: num
   }));

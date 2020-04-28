@@ -8,6 +8,17 @@ import Layout from "../components/layout"
 import SEO from "../components/seo"
 import Loader from "../components/loader"
 
+// const googleRecaptchaPublishableKey = '6LePjOkUAAAAAIlHjW_wLoCsUQPUzwOZZgYGRPR1';
+const googleRecaptchaPublishableKey = '6LdqhuwUAAAAABgVyvQzKyoyZPQCYUjmD0NiMp8k'; // LOCAL TEST key
+// const googleRecaptchaPublishableKey = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // GLOBAL TEST key
+// const googleRecaptchaPublishableKey = '6LcjiOwUAAAAAAJzQblwM8pLMsTKe3VZm3ukN4fD'; // v2 key
+const safeGrecaptcha = ({action}) => {
+  if (typeof window !== `undefined`) {
+    // return the Promise
+    return window.grecaptcha.execute(googleRecaptchaPublishableKey, {action});
+  }
+  else return Promise.resolve('RECAPTCHA_UNAVAILABLE');
+}
 const stripePublishableKeyStatic = `${process.env.GATSBY_STRIPE_PUBLISHABLE_KEY}`;
 console.log({stripePublishableKeyStatic})
 // let stripePromise = loadStripe(stripePublishableKeyStatic);
@@ -105,21 +116,26 @@ const IndexPage = () => {
 
   const checkout = useCallback(async () => {
     if (isCheckingOut) return;
+    // const token = await grecaptcha.execute(googleRecaptchaPublishableKey, {action: 'checkout'});
+    const token = await safeGrecaptcha({action: 'checkout'});
+    console.log({token});
     setIsCheckingOut(true);
     const response = await fetch("/.netlify/functions/checkout",{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(cart),
+      body: JSON.stringify({cart, grctoken: token}),
     });
     const {checkout_session} = await response.json();
     const stripe = await stripePromise;
     stripe.redirectToCheckout({sessionId: checkout_session});
     setIsCheckingOut(false);
-  }, [pk, cart]) // update the callback if the state changes
+  }, [isCheckingOut, pk, cart]);
 
   const addToCart = useCallback((productId) => () => {
+    // grecaptcha.execute(googleRecaptchaPublishableKey, {action: 'cart-add'});
+    safeGrecaptcha({action: 'cartadd'});
     const newCart = {
       ...cart,
       [productId]: (cart[productId] || 0) + 1
@@ -129,18 +145,30 @@ const IndexPage = () => {
   }, [cart, getCartTotal]);
 
   const removeFromCart = useCallback((productId) => () => {
+    // grecaptcha.execute(googleRecaptchaPublishableKey, {action: 'cart-remove'});
+    safeGrecaptcha({action: 'cartremove'});
+
     const newCart = {
       ...cart,
       [productId]: cart[productId] - 1
     };
     updateCart(newCart);
     // setTotal(getCartTotal(newCart));
-  }, [cart, getCartTotal])
+  }, [cart, getCartTotal]);
+
+  // const grcV2callbackTest = val => {
+  //   console.log('grcV2callbackTest', val );
+  // }
 
   return (
     <Layout>
       <SEO title="Home" />
       <h1>Hi!</h1>
+      {/* <div class="g-recaptcha"
+        data-sitekey={`${googleRecaptchaPublishableKey}`}
+        data-callback={grcV2callbackTest}
+        data-size="invisible">
+      </div> */}
       <p>Welcome to your new Netlify-hosted Gatsby-based e-commerce site.</p>
       <p>(Still a work in progress!)</p>
       { productsLoading ? <Loader /> : (Object.keys(products).length > 0) &&
